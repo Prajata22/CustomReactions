@@ -126,7 +126,7 @@ class ReactionsConfigBuilder(val context: Context) {
 
     var popupMargin: Int = horizontalMargin
 
-    var popupCornerRadius: Int = 100
+    var popupCornerRadius: Int = 120
 
     @ColorInt
     var popupColor: Int = Color.WHITE

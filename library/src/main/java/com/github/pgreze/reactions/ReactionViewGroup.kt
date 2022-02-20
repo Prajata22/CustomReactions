@@ -97,7 +97,6 @@ class ReactionViewGroup(
 
     private var dialogX: Int = 0
     private var dialogY: Int = 0
-    private var selectedIndex = -1
 
     private var currentState: ReactionViewState? = null
         set(value) {
@@ -286,10 +285,16 @@ class ReactionViewGroup(
                 val reaction = reactionView?.reaction
                 val position = reaction?.let { config.reactions.indexOf(it) } ?: -1
 
-                if (reactionSelectedListener?.invoke(reaction, mediumIconSize, event.rawX, event.rawY, dialogX, dialogHeight, position)?.not() == true) {
+                if (reactionSelectedListener?.invoke(
+                        reaction,
+                        mediumIconSize,
+                        event.rawX, event.rawY,
+                        dialogX, dialogHeight, position)?.not() == true
+                ) {
+                    Log.i("BAS", "3")
                     currentState = ReactionViewState.WaitingSelection
                 } else {
-                    selectedIndex = position
+                    Log.i("BAS", "4")
                     dismiss()
                 }
             }
@@ -346,24 +351,22 @@ class ReactionViewGroup(
         currentAnimator = ValueAnimator.ofFloat(0f, 1f)
             .apply {
                 addUpdateListener { animator ->
+                    val progress = animator.animatedValue as Float
+                    val translationY = boundary.path.progressMove(progress).toFloat()
+
                     var index = -1
 
                     forEach {
                         index += 1
 
-                        if(index != selectedIndex) {
-                            val progress = animator.animatedValue as Float
-                            val translationY = boundary.path.progressMove(progress).toFloat()
-
-                            postDelayed({
-                                it.translationY = translationY
-                                it.alpha = if (boundary is ReactionViewState.Boundary.Appear) {
-                                    progress
-                                } else {
-                                    1 - progress
-                                }
-                            }, (index * 15).toLong())
-                        }
+                        postDelayed({
+                            it.translationY = translationY
+                            it.alpha = if (boundary is ReactionViewState.Boundary.Appear) {
+                                progress
+                            } else {
+                                1 - progress
+                            }
+                        }, (index * 15).toLong())
                     }
 
                     // Invalidate children positions

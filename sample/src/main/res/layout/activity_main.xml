@@ -10,59 +10,42 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:background="@android:color/darker_gray">
+        android:background="@android:color/white">>
 
-        <Button
-            android:id="@+id/top_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="top"
-            android:layout_marginTop="20dp"
-            android:layout_marginLeft="50dp"
-            android:text="Top button" />
-
-        <Button
-            android:id="@+id/top_right_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="top|right"
-            android:layout_marginTop="20dp"
-            android:layout_marginRight="50dp"
-            android:text="Top right button" />
-
-        <Button
+        <LinearLayout
             android:id="@+id/facebook_btn"
+            android:padding="8dp"
+            android:background="?selectableItemBackground"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
             android:layout_gravity="bottom"
             android:layout_marginBottom="20dp"
-            android:layout_marginLeft="50dp"
-            android:text="Utsav Like" />
+            android:layout_marginLeft="50dp">
 
-    </FrameLayout>
+            <ImageView
+                android:id="@+id/image"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_like"/>
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
+            <TextView
+                android:id="@+id/text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="8dp"
+                android:text="Like" />
 
-        <Button
-            android:id="@+id/right_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="top|right"
-            android:layout_marginTop="20dp"
-            android:layout_marginRight="50dp"
-            android:text="Right" />
-
-        <Button
-            android:id="@+id/crypto_bottom_left"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:layout_marginBottom="20dp"
-            android:layout_marginLeft="50dp"
-            android:text="Crypto" />
+        </LinearLayout>
+<!--        <Button-->
+<!--            android:id="@+id/facebook_btn"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_gravity="bottom"-->
+<!--            android:layout_marginBottom="20dp"-->
+<!--            android:layout_marginLeft="50dp"-->
+<!--            android:text="Utsav Like" />-->
 
     </FrameLayout>
 

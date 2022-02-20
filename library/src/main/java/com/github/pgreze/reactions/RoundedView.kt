@@ -13,20 +13,22 @@ import android.view.View
 @SuppressLint("ViewConstructor")
 class RoundedView(context: Context, private val config: ReactionsConfig) : View(context) {
 
-    private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+    private val paint = Paint().apply {
         color = config.popupColor
         style = Paint.Style.FILL
-        alpha = config.popupAlphaValue
+        isAntiAlias = true
     }
 
     private val rect = RectF()
 
     override fun onDraw(canvas: Canvas) {
         // Draw the background rounded rectangle
-        rect.left = 0f
-        rect.right = width.toFloat()
-        rect.top = 0f
-        rect.bottom = height.toFloat()
+        paint.setShadowLayer(5.0f, 0.0f, 0.0f, 0x55000000)
+
+        rect.left = 8f
+        rect.right = width.toFloat() - 8
+        rect.top = 8f
+        rect.bottom = height.toFloat() - 8
         val popupCornerRadius = config.popupCornerRadius.toFloat()
         canvas.drawRoundRect(rect, popupCornerRadius, popupCornerRadius, paint)
     }

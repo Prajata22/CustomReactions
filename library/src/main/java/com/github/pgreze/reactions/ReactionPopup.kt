@@ -10,6 +10,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import android.widget.ImageView
 import android.widget.PopupWindow
 import androidx.annotation.RequiresApi
 import java.util.*
@@ -20,6 +21,7 @@ import java.util.*
  */
 class ReactionPopup @JvmOverloads constructor(
     private var context: Context,
+    private var imageView: ImageView,
     private var reactionsConfig: ReactionsConfig,
     var reactionSelectedListener: ReactionSelectedListener? = null,
     private var reactionPopupStateChangeListener: ReactionPopupStateChangeListener? = null,
