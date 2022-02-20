@@ -5,17 +5,14 @@ import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Point
+import android.os.Build
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import com.github.pgreze.reactions.PopupGravity.CENTER
-import com.github.pgreze.reactions.PopupGravity.DEFAULT
-import com.github.pgreze.reactions.PopupGravity.PARENT_LEFT
-import com.github.pgreze.reactions.PopupGravity.PARENT_RIGHT
-import com.github.pgreze.reactions.PopupGravity.SCREEN_LEFT
-import com.github.pgreze.reactions.PopupGravity.SCREEN_RIGHT
+import androidx.annotation.RequiresApi
+import com.github.pgreze.reactions.PopupGravity.*
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -29,7 +26,7 @@ import kotlin.math.roundToInt
 @SuppressLint("ViewConstructor")
 class ReactionViewGroup(
     context: Context,
-    private val config: ReactionsConfig
+    private val config: ReactionsConfig,
 ) : ViewGroup(context) {
 
     private companion object {
@@ -67,12 +64,12 @@ class ReactionViewGroup(
                 ) / nDividers
     }
 
-    private val background = RoundedView(context, config)
+    private var background = RoundedView(context, config)
         .also {
             it.layoutParams = LayoutParams(dialogWidth, dialogHeight)
             addView(it)
         }
-    private val reactions: List<ReactionView> = config.reactions
+    private var reactions: List<ReactionView> = config.reactions
         .map { reaction ->
             ReactionView(context, reaction).also { reactionView ->
                 reactionView.layoutParams = LayoutParams(mediumIconSize, mediumIconSize)
@@ -100,6 +97,7 @@ class ReactionViewGroup(
 
     private var dialogX: Int = 0
     private var dialogY: Int = 0
+    private var selectedIndex = -1
 
     private var currentState: ReactionViewState? = null
         set(value) {
@@ -110,8 +108,27 @@ class ReactionViewGroup(
             Log.i(TAG, "State: $oldValue -> $value")
             when (value) {
                 is ReactionViewState.Boundary -> animTranslationY(value)
-                is ReactionViewState.WaitingSelection -> animSize(null)
-                is ReactionViewState.Selected -> animSize(value)
+                is ReactionViewState.WaitingSelection -> {
+                    if(!isIgnoringFirstReaction) {
+                        removeView(background)
+                        background = RoundedView(context, config)
+                            .also {
+                                it.layoutParams = LayoutParams(dialogWidth, dialogHeight - 45)
+                                addView(it, 0)
+                            }
+                    }
+
+                    animSize(null)
+                }
+                is ReactionViewState.Selected -> {
+                    removeView(background)
+                    background = RoundedView(context, config)
+                        .also {
+                            it.layoutParams = LayoutParams(dialogWidth, dialogHeight - 60)
+                            addView(it, 0)
+                        }
+                    animSize(value)
+                }
             }
         }
 
@@ -221,7 +238,7 @@ class ReactionViewGroup(
             .let { Point(it[0], it[1]) }
         parentSize = Size(parent.width, parent.height)
         isFirstTouchAlwaysInsideButton = true
-        isIgnoringFirstReaction = true
+        isIgnoringFirstReaction = false
 
         // Resize, could be fixed with later resolved width/height
         onSizeChanged(width, height, width, height)
@@ -231,6 +248,7 @@ class ReactionViewGroup(
         currentState = ReactionViewState.Boundary.Appear(path = dialogHeight to 0)
     }
 
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
         isFirstTouchAlwaysInsideButton = isFirstTouchAlwaysInsideButton && inInsideParentView(event)
@@ -264,11 +282,14 @@ class ReactionViewGroup(
                     return true
                 }
 
-                val reaction = getIntersectedIcon(event.rawX, event.rawY)?.reaction
+                val reactionView = getIntersectedIcon(event.rawX, event.rawY)
+                val reaction = reactionView?.reaction
                 val position = reaction?.let { config.reactions.indexOf(it) } ?: -1
-                if (reactionSelectedListener?.invoke(position)?.not() == true) {
+
+                if (reactionSelectedListener?.invoke(reaction, mediumIconSize, event.rawX, event.rawY, dialogX, dialogHeight, position)?.not() == true) {
                     currentState = ReactionViewState.WaitingSelection
-                } else { // reactionSelectedListener == null or reactionSelectedListener() == true
+                } else {
+                    selectedIndex = position
                     dismiss()
                 }
             }
@@ -311,6 +332,7 @@ class ReactionViewGroup(
     private fun animTranslationY(boundary: ReactionViewState.Boundary) {
         // Init views
         val initialAlpha = if (boundary is ReactionViewState.Boundary.Appear) 0f else 1f
+
         forEach {
             it.alpha = initialAlpha
             it.translationY = boundary.path.first.toFloat()
@@ -324,15 +346,23 @@ class ReactionViewGroup(
         currentAnimator = ValueAnimator.ofFloat(0f, 1f)
             .apply {
                 addUpdateListener { animator ->
-                    val progress = animator.animatedValue as Float
-                    val translationY = boundary.path.progressMove(progress).toFloat()
+                    var index = -1
 
                     forEach {
-                        it.translationY = translationY
-                        it.alpha = if (boundary is ReactionViewState.Boundary.Appear) {
-                            progress
-                        } else {
-                            1 - progress
+                        index += 1
+
+                        if(index != selectedIndex) {
+                            val progress = animator.animatedValue as Float
+                            val translationY = boundary.path.progressMove(progress).toFloat()
+
+                            postDelayed({
+                                it.translationY = translationY
+                                it.alpha = if (boundary is ReactionViewState.Boundary.Appear) {
+                                    progress
+                                } else {
+                                    1 - progress
+                                }
+                            }, (index * 15).toLong())
                         }
                     }
 

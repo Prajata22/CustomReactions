@@ -17,7 +17,15 @@ import kotlin.math.roundToInt
  * @param position selected item position, or -1.
  * @return if reaction selector should close.
  */
-typealias ReactionSelectedListener = (position: Int) -> Boolean
+typealias ReactionSelectedListener = (
+    reaction: Reaction?,
+    mediumIconSize: Int,
+    eventX: Float,
+    eventY: Float,
+    dialogX: Int,
+    dialogHeight: Int,
+    position: Int
+) -> Boolean
 
 /**
  * Reaction text provider.
@@ -32,9 +40,15 @@ typealias ReactionTextProvider = (position: Int) -> CharSequence?
  */
 typealias ReactionPopupStateChangeListener = (isShowing: Boolean) -> Unit
 
+//data class Reaction(
+//    val image: GifDrawable,
+//    val scaleType: ImageView.ScaleType = ImageView.ScaleType.FIT_CENTER
+//)
+//
 data class Reaction(
     val image: Drawable,
-    val scaleType: ImageView.ScaleType = ImageView.ScaleType.FIT_CENTER
+    val scaleType: ImageView.ScaleType = ImageView.ScaleType.FIT_CENTER,
+    val resID: Int
 )
 
 data class ReactionsConfig(
@@ -112,7 +126,7 @@ class ReactionsConfigBuilder(val context: Context) {
 
     var popupMargin: Int = horizontalMargin
 
-    var popupCornerRadius: Int = 90
+    var popupCornerRadius: Int = 100
 
     @ColorInt
     var popupColor: Int = Color.WHITE
@@ -149,7 +163,9 @@ class ReactionsConfigBuilder(val context: Context) {
         res: IntArray,
         scaleType: ImageView.ScaleType = ImageView.ScaleType.FIT_CENTER
     ) = withReactions(res.map {
-        Reaction(ContextCompat.getDrawable(context, it)!!, scaleType)
+//        Reaction(GifDrawable(context.resources, it), scaleType)
+//        Reaction(GifDrawable.createFromResource(context.resources, it)!!, scaleType)
+        Reaction(ContextCompat.getDrawable(context, it)!!, scaleType, it)
     })
 
     fun withReactionTexts(reactionTextProvider: ReactionTextProvider) = this.also {

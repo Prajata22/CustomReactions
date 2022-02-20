@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Point
 import android.widget.ImageView
+import com.bumptech.glide.Glide
 
 @SuppressLint("ViewConstructor")
 class ReactionView constructor(
@@ -22,7 +23,11 @@ class ReactionView constructor(
 
     init {
         scaleType = reaction.scaleType
-        setImageDrawable(reaction.image)
+        Glide.with(context)
+            .asGif()
+            .load(reaction.resID)
+            .into(this);
+//            setImageDrawable(reaction.image)
     }
 
     @SuppressLint("DrawAllocation")
