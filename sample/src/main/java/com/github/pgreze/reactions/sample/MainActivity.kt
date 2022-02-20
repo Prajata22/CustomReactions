@@ -58,9 +58,19 @@ class MainActivity : AppCompatActivity() {
                         reactionView.layoutParams = lp
                         findViewById<FrameLayout>(R.id.rootView).addView(reactionView)
 
+                        val toXDelta = if(position == 5 || position == 6) {
+                            -dialogX.toFloat() - ((position / 10f) * dialogX)
+                        } else if(position == 1) {
+                            -dialogX.toFloat() + 150
+                        } else if(position == 0) {
+                            -dialogX.toFloat() + 250
+                        } else {
+                            -dialogX.toFloat()
+                        }
+
                         val animationArc = ArcTranslationAnimation(
                             0f,
-                            -dialogX.toFloat() - ((position / 10f) * dialogX),
+                             toXDelta,
                             0f,
                             dialogHeight.toFloat()
                         )
