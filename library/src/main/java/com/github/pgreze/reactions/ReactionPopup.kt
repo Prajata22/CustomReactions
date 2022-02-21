@@ -15,7 +15,6 @@ import android.widget.PopupWindow
 import androidx.annotation.RequiresApi
 import java.util.*
 
-
 /**
  * Entry point for reaction popup.
  */
@@ -38,24 +37,7 @@ class ReactionPopup @JvmOverloads constructor(
         )
     }
 
-
-    private var view = ReactionViewGroup(context, reactionsConfig).also {
-        it.layoutParams = FrameLayout.LayoutParams(
-            ViewGroup.LayoutParams.WRAP_CONTENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT,
-            Gravity.CENTER
-        )
-
-        it.reactionSelectedListener = reactionSelectedListener
-
-        it.reactionPopupStateChangeListener = reactionPopupStateChangeListener
-
-        // Just add the view,
-        // it will position itself depending on the display preference.
-        rootView.addView(it)
-
-        it.dismissListener = ::dismiss
-    }
+    private var view = buildViewGroup()
 
     init {
         contentView = rootView
@@ -94,8 +76,13 @@ class ReactionPopup @JvmOverloads constructor(
     override fun dismiss() {
         view.dismiss()
         rootView.removeView(view)
+        view = buildViewGroup()
 
-        view = ReactionViewGroup(context, reactionsConfig).also {
+        super.dismiss()
+    }
+
+    private fun buildViewGroup(): ReactionViewGroup {
+        return ReactionViewGroup(context, reactionsConfig).also {
             it.layoutParams = FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -112,6 +99,5 @@ class ReactionPopup @JvmOverloads constructor(
 
             it.dismissListener = ::dismiss
         }
-        super.dismiss()
     }
 }
