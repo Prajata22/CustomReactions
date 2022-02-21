@@ -6,7 +6,6 @@ import android.view.animation.Transformation
 import kotlin.math.pow
 import kotlin.math.roundToLong
 
-// http://www.math.ubc.ca/~cass/gfx/bezier.html
 class ArcTranslationAnimation : Animation {
     private var mFromXType = ABSOLUTE
     private var mToXType = ABSOLUTE

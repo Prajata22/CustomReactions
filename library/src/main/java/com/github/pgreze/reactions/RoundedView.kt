@@ -23,7 +23,7 @@ class RoundedView(context: Context, private val config: ReactionsConfig) : View(
 
     override fun onDraw(canvas: Canvas) {
         // Draw the background rounded rectangle
-        paint.setShadowLayer(5.0f, 0.0f, 0.0f, 0x55000000)
+        paint.setShadowLayer(5.0f, 0.0f, 5.0f, 0x55000000)
 
         rect.left = 8f
         rect.right = width.toFloat() - 8

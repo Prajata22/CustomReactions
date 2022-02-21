@@ -10,6 +10,7 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import com.github.pgreze.reactions.PopupGravity.*
@@ -69,11 +70,14 @@ class ReactionViewGroup(
             it.layoutParams = LayoutParams(dialogWidth, dialogHeight)
             addView(it)
         }
+
     private var reactions: List<ReactionView> = config.reactions
         .map { reaction ->
             ReactionView(context, reaction).also { reactionView ->
                 reactionView.layoutParams = LayoutParams(mediumIconSize, mediumIconSize)
-                addView(reactionView)
+                post {
+                    addView(reactionView)
+                }
             }
         }
         .toList()
@@ -291,10 +295,8 @@ class ReactionViewGroup(
                         event.rawX, event.rawY,
                         dialogX, dialogHeight, position)?.not() == true
                 ) {
-                    Log.i("BAS", "3")
                     currentState = ReactionViewState.WaitingSelection
                 } else {
-                    Log.i("BAS", "4")
                     dismiss()
                 }
             }
@@ -305,14 +307,10 @@ class ReactionViewGroup(
         return true
     }
 
-    fun resetChildrenToNormalSize() {
-        currentState = ReactionViewState.WaitingSelection
-    }
-
     fun dismiss() {
         reactionPopupStateChangeListener?.invoke(false)
-
         if (currentState == null) return
+        removeView(background)
 
         currentState = ReactionViewState.Boundary.Disappear(
             (currentState as? ReactionViewState.Selected)?.view,
@@ -354,10 +352,13 @@ class ReactionViewGroup(
                     val progress = animator.animatedValue as Float
                     val translationY = boundary.path.progressMove(progress).toFloat()
 
+                    animator.interpolator = AccelerateDecelerateInterpolator()
+
                     var index = -1
 
                     forEach {
                         index += 1
+                        animator.duration = (index * 50).toLong()
 
                         postDelayed({
                             it.translationY = translationY
@@ -366,7 +367,7 @@ class ReactionViewGroup(
                             } else {
                                 1 - progress
                             }
-                        }, (index * 15).toLong())
+                        }, (index * 14).toLong())
                     }
 
                     // Invalidate children positions
@@ -391,7 +392,8 @@ class ReactionViewGroup(
 
                     override fun onAnimationCancel(animation: Animator?) {}
 
-                    override fun onAnimationStart(animation: Animator?) {}
+                    override fun onAnimationStart(animation: Animator?) {
+                    }
                 })
             }
     }
@@ -458,7 +460,8 @@ private fun progressMove(from: Int, to: Int, progress: Float): Int =
     from + ((to - from) * progress).toInt()
 
 private fun Pair<Int, Int>.progressMove(progress: Float): Int =
-    progressMove(first, second, progress)
+    progressMove(first , second, progress)
+
 
 sealed class ReactionViewState {
 
@@ -473,7 +476,7 @@ sealed class ReactionViewState {
          * - otherwise going down
          *   while [selectedView] is going (idx=0=up, other=up/left) and decreasing size
          */
-        class Disappear(val selectedView: ReactionView?, path: Pair<Int, Int>) : Boundary(path)
+        class Disappear(private val selectedView: ReactionView?, path: Pair<Int, Int>) : Boundary(path)
     }
 
     object WaitingSelection : ReactionViewState()

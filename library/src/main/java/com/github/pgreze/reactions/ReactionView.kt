@@ -6,7 +6,6 @@ import android.graphics.Point
 import android.util.Log
 import android.widget.ImageView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
 
 @SuppressLint("ViewConstructor")
 class ReactionView constructor(
@@ -25,8 +24,7 @@ class ReactionView constructor(
 
     init {
         scaleType = reaction.scaleType
-        Log.i("BAM789", reaction.resID.toString())
-//        setImageDrawable(reaction.image)
+
         Glide.with(context)
             .asGif()
             .load(reaction.resID)

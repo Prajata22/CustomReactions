@@ -23,13 +23,13 @@ class ReactionPopup @JvmOverloads constructor(
     private var context: Context,
     private var imageView: ImageView,
     private var reactionsConfig: ReactionsConfig,
-    var reactionSelectedListener: ReactionSelectedListener? = null,
+    private var reactionSelectedListener: ReactionSelectedListener? = null,
     private var reactionPopupStateChangeListener: ReactionPopupStateChangeListener? = null,
 ) : PopupWindow(context), View.OnTouchListener {
 
-    val MIN_CLICK_DURATION = 200
-    var startClickTime: Long = 0
-    var longClickActive = false
+    private val MIN_CLICK_DURATION = 200
+    private var startClickTime: Long = 0
+    private var longClickActive = false
 
     private val rootView = FrameLayout(context).also {
         it.layoutParams = ViewGroup.LayoutParams(
