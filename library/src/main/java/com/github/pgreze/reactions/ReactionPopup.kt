@@ -26,7 +26,7 @@ class ReactionPopup @JvmOverloads constructor(
     private var reactionPopupStateChangeListener: ReactionPopupStateChangeListener? = null,
 ) : PopupWindow(context), View.OnTouchListener {
 
-    private val MIN_CLICK_DURATION = 200
+    private val MIN_CLICK_DURATION = 100
     private var startClickTime: Long = 0
     private var longClickActive = false
 

@@ -141,7 +141,6 @@ class ReactionViewGroup(
 
             field = value
             reactionText.visibility = View.GONE
-            field?.duration = 100
             field?.start()
         }
 
@@ -241,7 +240,7 @@ class ReactionViewGroup(
             .let { Point(it[0], it[1]) }
         parentSize = Size(parent.width, parent.height)
         isFirstTouchAlwaysInsideButton = true
-        isIgnoringFirstReaction = false
+        isIgnoringFirstReaction = true
 
         // Resize, could be fixed with later resolved width/height
         onSizeChanged(width, height, width, height)
@@ -345,20 +344,18 @@ class ReactionViewGroup(
         }
         requestLayout()
 
-        // TODO: animate selected index if boundary == Disappear
         currentAnimator = ValueAnimator.ofFloat(0f, 1f)
             .apply {
                 addUpdateListener { animator ->
+                    animator.interpolator = AccelerateDecelerateInterpolator()
+                    animator.duration = 300
+
                     val progress = animator.animatedValue as Float
                     val translationY = boundary.path.progressMove(progress).toFloat()
-
-                    animator.interpolator = AccelerateDecelerateInterpolator()
-
                     var index = -1
 
                     forEach {
                         index += 1
-                        animator.duration = (index * 50).toLong()
 
                         postDelayed({
                             it.translationY = translationY
