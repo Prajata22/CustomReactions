@@ -55,6 +55,17 @@ class ReactionPopup @JvmOverloads constructor(
             MotionEvent.ACTION_DOWN -> if (!longClickActive) {
                 longClickActive = true
                 startClickTime = Calendar.getInstance().timeInMillis
+            } else {
+                val clickDuration: Long = Calendar.getInstance().timeInMillis - startClickTime
+                if (clickDuration >= MIN_CLICK_DURATION) {
+                    longClickActive = false
+                    if (!isShowing) {
+                        // Show fullscreen with button as context provider
+                        showAtLocation(v, Gravity.NO_GRAVITY, 0, 0)
+                        view.show(event, v)
+                        reactionPopupStateChangeListener?.invoke(true)
+                    }
+                }
             }
             MotionEvent.ACTION_MOVE -> if (longClickActive) {
                 val clickDuration: Long = Calendar.getInstance().timeInMillis - startClickTime

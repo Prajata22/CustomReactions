@@ -116,7 +116,7 @@ class ReactionViewGroup(
                         removeView(background)
                         background = RoundedView(context, config)
                             .also {
-                                it.layoutParams = LayoutParams(dialogWidth, dialogHeight - 45)
+                                it.layoutParams = LayoutParams(dialogWidth, dialogHeight)
                                 addView(it, 0)
                             }
                     }
@@ -344,7 +344,7 @@ class ReactionViewGroup(
         }
         requestLayout()
 
-        currentAnimator = ValueAnimator.ofFloat(0f, 1f)
+        currentAnimator = ValueAnimator.ofFloat(0f, 0.5f, 1f)
             .apply {
                 addUpdateListener { animator ->
                     animator.interpolator = AccelerateDecelerateInterpolator()
