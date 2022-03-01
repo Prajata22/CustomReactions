@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Reactions Sample</string>
+    <string name="app_name">Utsav Reactions</string>
     <string-array name="crypto_symbols">
         <item>btc</item>
         <item>eth</item>
