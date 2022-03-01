@@ -134,7 +134,7 @@ class MainActivity : AppCompatActivity(), ApplexGestureListener {
             textView.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.text_secondary))
         } else {
             isLiked = true
-            imageView.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_fb_like))
+            imageView.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.like))
             textView.text = strings[0]
             textView.setTextColor(ContextCompat.getColor(this@MainActivity, colors[0]))
         }
