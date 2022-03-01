@@ -7,6 +7,7 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.view.*
 import android.widget.FrameLayout
+import android.widget.LinearLayout
 import android.widget.PopupWindow
 import androidx.annotation.RequiresApi
 
@@ -16,10 +17,15 @@ import androidx.annotation.RequiresApi
 class ReactionPopup @JvmOverloads constructor(
     private var context: Context,
     private var applexGestureListener: ApplexGestureListener,
+    private var button: LinearLayout,
     private var reactionsConfig: ReactionsConfig,
     private var reactionSelectedListener: ReactionSelectedListener? = null,
     private var reactionPopupStateChangeListener: ReactionPopupStateChangeListener? = null,
 ) : PopupWindow(context), View.OnTouchListener {
+
+    private lateinit var v: View
+    private var touchGestureListener: TouchGestureListener
+    private var touchGestureDetector: GestureDetector
 
     private val rootView = FrameLayout(context).also {
         it.layoutParams = ViewGroup.LayoutParams(
@@ -36,13 +42,14 @@ class ReactionPopup @JvmOverloads constructor(
         height = ViewGroup.LayoutParams.MATCH_PARENT
         isFocusable = true
         setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        touchGestureListener = TouchGestureListener()
+        touchGestureDetector = GestureDetector(context, touchGestureListener)
     }
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouch(v: View, event: MotionEvent): Boolean {
-        val touchGestureListener = TouchGestureListener(v)
-        val touchGestureDetector = GestureDetector(context, touchGestureListener)
+        this.v = v
         touchGestureDetector.onTouchEvent(event)
         return view.onTouchEvent(event)
     }
@@ -51,6 +58,7 @@ class ReactionPopup @JvmOverloads constructor(
         view.dismiss()
         rootView.removeView(view)
         view = buildViewGroup()
+        button.visibility = View.VISIBLE
 
         super.dismiss()
     }
@@ -75,14 +83,15 @@ class ReactionPopup @JvmOverloads constructor(
         }
     }
 
-    internal inner class TouchGestureListener(private val v: View) : GestureDetector.SimpleOnGestureListener() {
-        override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
+    internal inner class TouchGestureListener : GestureDetector.SimpleOnGestureListener() {
+        override fun onSingleTapConfirmed(e: MotionEvent?): Boolean {
             applexGestureListener.onSingleClick()
-            return super.onSingleTapConfirmed(e)
+            return true
         }
 
         override fun onLongPress(e: MotionEvent) {
             super.onLongPress(e)
+
             if (!isShowing) {
                 // Show fullscreen with button as context provider
                 showAtLocation(v, Gravity.NO_GRAVITY, 0, 0)

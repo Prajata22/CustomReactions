@@ -1,20 +1,13 @@
 package com.github.pgreze.reactions.sample
 
-import android.graphics.Color
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.github.pgreze.reactions.sample.R
-import android.graphics.drawable.ColorDrawable
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.view.View
-import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.Animation
-import android.widget.FrameLayout
-import android.widget.ImageView
-import android.widget.TextView
+import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.github.pgreze.reactions.*
 
@@ -23,15 +16,29 @@ class MainActivity : AppCompatActivity(), ApplexGestureListener {
     private val colors = arrayOf(R.color.blue, R.color.red, R.color.yellow, R.color.yellow, R.color.yellow, R.color.orange)
 
     private lateinit var imageView: ImageView
+    private lateinit var textView: TextView
+    private lateinit var button: LinearLayout
+    private lateinit var frameLayout: FrameLayout
+
+    private var isLiked = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        sampleCenterLeft()
+
         imageView = findViewById(R.id.image)
+        textView = findViewById(R.id.text)
+        button = findViewById(R.id.facebook_btn)
+        frameLayout = findViewById(R.id.rootView)
+
+        imageView.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_like))
+        textView.text = strings[0]
+        textView.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.text_secondary))
+
+        reactions()
     }
 
-    private fun sampleCenterLeft() {
+    private fun reactions() {
         val reactionSelectedListener = {
                 reaction: Reaction?,
                 mediumIconSize: Int,
@@ -42,6 +49,7 @@ class MainActivity : AppCompatActivity(), ApplexGestureListener {
                 position: Int ->
 
             if(reaction != null) {
+                isLiked = true
                 Handler(Looper.getMainLooper()).postDelayed({
                     ReactionView(this, reaction).also { reactionView ->
                         val lp = FrameLayout.LayoutParams(
@@ -51,7 +59,7 @@ class MainActivity : AppCompatActivity(), ApplexGestureListener {
                         lp.setMargins(eventX.toInt() - 20, eventY.toInt() - (dialogHeight * 1.5).toInt(), 0, 0)
 
                         reactionView.layoutParams = lp
-                        findViewById<FrameLayout>(R.id.rootView).addView(reactionView)
+                        frameLayout.addView(reactionView)
 
                         val toXDelta = if(position == 5 || position == 6) {
                             -dialogX.toFloat() - ((position / 10f) * dialogX)
@@ -79,11 +87,10 @@ class MainActivity : AppCompatActivity(), ApplexGestureListener {
                             }
 
                             override fun onAnimationEnd(animation: Animation) {
-                                findViewById<FrameLayout>(R.id.rootView).removeView(reactionView)
-                                findViewById<ImageView>(R.id.image).setImageDrawable(reaction.image)
-                                findViewById<TextView>(R.id.text).text = strings[position]
-                                findViewById<TextView>(R.id.text).setTextColor(
-                                    ContextCompat.getColor(this@MainActivity, colors[position]))
+                                frameLayout.removeView(reactionView)
+                                imageView.setImageDrawable(reaction.image)
+                                textView.text = strings[position]
+                                textView.setTextColor(ContextCompat.getColor(this@MainActivity, colors[position]))
                             }
 
                             override fun onAnimationRepeat(animation: Animation) {
@@ -102,6 +109,7 @@ class MainActivity : AppCompatActivity(), ApplexGestureListener {
         val popup = ReactionPopup(
             this,
             this,
+            button,
             ReactionsConfigBuilder(this)
                 .withReactions(intArrayOf(
                     R.raw.like,
@@ -115,67 +123,24 @@ class MainActivity : AppCompatActivity(), ApplexGestureListener {
             reactionSelectedListener
         )
 
-        findViewById<View>(R.id.facebook_btn).setOnTouchListener(popup)
+        button.setOnTouchListener(popup)
     }
 
     override fun onSingleClick() {
-        imageView.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_fb_like))
+        if(isLiked) {
+            isLiked = false
+            imageView.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_like))
+            textView.text = strings[0]
+            textView.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.text_secondary))
+        } else {
+            isLiked = true
+            imageView.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_fb_like))
+            textView.text = strings[0]
+            textView.setTextColor(ContextCompat.getColor(this@MainActivity, colors[0]))
+        }
     }
 
     override fun onLongClick() {
-
+        button.visibility = View.GONE
     }
-
-//    private fun sampleTopLeft() {
-//        val popup = ReactionPopup(
-//            this,
-//            ReactionsConfigBuilder(this)
-//                .withReactions(intArrayOf(
-//                    R.drawable.ic_fb_like,
-//                    R.drawable.ic_fb_love,
-//                    R.drawable.ic_fb_laugh))
-//                .withPopupAlpha(20)
-//                .withReactionTexts { position: Int? -> strings[position!!] }
-//                .withTextBackground(ColorDrawable(Color.TRANSPARENT))
-//                .withTextColor(Color.BLACK)
-//                .withTextHorizontalPadding(0)
-//                .withTextVerticalPadding(0)
-//                .withTextSize(resources.getDimension(R.dimen.reactions_text_size))
-//                .build())
-//        //                position -> true);
-//        findViewById<View>(R.id.top_btn).setOnTouchListener(popup)
-//    }
-//
-//    private fun sampleBottomLeft() {
-//        val margin = resources.getDimensionPixelSize(R.dimen.crypto_item_margin)
-//        val popup = ReactionPopup(this, ReactionsConfigBuilder(this)
-//            .withReactions(intArrayOf(
-//                R.drawable.ic_crypto_btc,
-//                R.drawable.ic_crypto_eth,
-//                R.drawable.ic_crypto_ltc,
-//                R.drawable.ic_crypto_dash,
-//                R.drawable.ic_crypto_xrp,
-//                R.drawable.ic_crypto_xmr,
-//                R.drawable.ic_crypto_doge,
-//                R.drawable.ic_crypto_steem,
-//                R.drawable.ic_crypto_kmd,
-//                R.drawable.ic_crypto_zec
-//            ))
-//            .withReactionTexts(R.array.crypto_symbols)
-//            .withPopupColor(Color.LTGRAY)
-//            .withReactionSize(resources.getDimensionPixelSize(R.dimen.crypto_item_size))
-//            .withHorizontalMargin(margin)
-//            .withVerticalMargin(margin / 2)
-//            .withTextBackground(ColorDrawable(Color.TRANSPARENT))
-//            .withTextColor(Color.BLACK)
-//            .withTextSize(resources.getDimension(R.dimen.reactions_text_size) * 1.5f)
-//            .build())
-//
-////        popup.setReactionSelectedListener((position) -> {
-////            Log.i("Reactions", "Selection position=" + position);
-////            // Close selector if not invalid item (testing purpose)
-////            return position != 3;
-////        });
-//        findViewById<View>(R.id.crypto_bottom_left).setOnTouchListener(popup)
-//    }
 }
