@@ -75,12 +75,10 @@ class ReactionViewGroup(
         .map { reaction ->
             ReactionView(context, reaction).also { reactionView ->
                 reactionView.layoutParams = LayoutParams(mediumIconSize, mediumIconSize)
-                post {
-                    addView(reactionView)
-                }
+                addView(reactionView)
             }
-        }
-        .toList()
+        }.toList()
+
     private val reactionText: TextView = TextView(context)
         .also {
             if (config.typeface != null) {
@@ -381,6 +379,7 @@ class ReactionViewGroup(
                             is ReactionViewState.Boundary.Disappear -> {
                                 visibility = View.GONE
                                 currentState = null
+                                dismiss()
                                 // Notify listener
                                 dismissListener?.invoke()
                             }

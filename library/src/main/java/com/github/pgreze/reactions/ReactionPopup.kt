@@ -5,30 +5,21 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
-import android.view.Gravity
-import android.view.MotionEvent
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.FrameLayout
-import android.widget.ImageView
 import android.widget.PopupWindow
 import androidx.annotation.RequiresApi
-import java.util.*
 
 /**
  * Entry point for reaction popup.
  */
 class ReactionPopup @JvmOverloads constructor(
     private var context: Context,
-    private var imageView: ImageView,
+    private var applexGestureListener: ApplexGestureListener,
     private var reactionsConfig: ReactionsConfig,
     private var reactionSelectedListener: ReactionSelectedListener? = null,
     private var reactionPopupStateChangeListener: ReactionPopupStateChangeListener? = null,
 ) : PopupWindow(context), View.OnTouchListener {
-
-    private val MIN_CLICK_DURATION = 100
-    private var startClickTime: Long = 0
-    private var longClickActive = false
 
     private val rootView = FrameLayout(context).also {
         it.layoutParams = ViewGroup.LayoutParams(
@@ -50,37 +41,9 @@ class ReactionPopup @JvmOverloads constructor(
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouch(v: View, event: MotionEvent): Boolean {
-        when (event.action) {
-            MotionEvent.ACTION_UP -> longClickActive = false
-            MotionEvent.ACTION_DOWN -> if (!longClickActive) {
-                longClickActive = true
-                startClickTime = Calendar.getInstance().timeInMillis
-            } else {
-                val clickDuration: Long = Calendar.getInstance().timeInMillis - startClickTime
-                if (clickDuration >= MIN_CLICK_DURATION) {
-                    longClickActive = false
-                    if (!isShowing) {
-                        // Show fullscreen with button as context provider
-                        showAtLocation(v, Gravity.NO_GRAVITY, 0, 0)
-                        view.show(event, v)
-                        reactionPopupStateChangeListener?.invoke(true)
-                    }
-                }
-            }
-            MotionEvent.ACTION_MOVE -> if (longClickActive) {
-                val clickDuration: Long = Calendar.getInstance().timeInMillis - startClickTime
-                if (clickDuration >= MIN_CLICK_DURATION) {
-                    longClickActive = false
-                    if (!isShowing) {
-                        // Show fullscreen with button as context provider
-                        showAtLocation(v, Gravity.NO_GRAVITY, 0, 0)
-                        view.show(event, v)
-                        reactionPopupStateChangeListener?.invoke(true)
-                    }
-                }
-            }
-        }
-
+        val touchGestureListener = TouchGestureListener(v)
+        val touchGestureDetector = GestureDetector(context, touchGestureListener)
+        touchGestureDetector.onTouchEvent(event)
         return view.onTouchEvent(event)
     }
 
@@ -109,6 +72,24 @@ class ReactionPopup @JvmOverloads constructor(
             rootView.addView(it)
 
             it.dismissListener = ::dismiss
+        }
+    }
+
+    internal inner class TouchGestureListener(private val v: View) : GestureDetector.SimpleOnGestureListener() {
+        override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
+            applexGestureListener.onSingleClick()
+            return super.onSingleTapConfirmed(e)
+        }
+
+        override fun onLongPress(e: MotionEvent) {
+            super.onLongPress(e)
+            if (!isShowing) {
+                // Show fullscreen with button as context provider
+                showAtLocation(v, Gravity.NO_GRAVITY, 0, 0)
+                view.show(e, v)
+                reactionPopupStateChangeListener?.invoke(true)
+                applexGestureListener.onLongClick()
+            }
         }
     }
 }

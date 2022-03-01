@@ -3,7 +3,6 @@ package com.github.pgreze.reactions
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Point
-import android.util.Log
 import android.widget.ImageView
 import com.bumptech.glide.Glide
 
@@ -25,10 +24,12 @@ class ReactionView constructor(
     init {
         scaleType = reaction.scaleType
 
-        Glide.with(context)
-            .asGif()
-            .load(reaction.resID)
-            .into(this);
+        post {
+            Glide.with(context)
+                .asGif()
+                .load(reaction.resID)
+                .into(this)
+        }
     }
 
     @SuppressLint("DrawAllocation")

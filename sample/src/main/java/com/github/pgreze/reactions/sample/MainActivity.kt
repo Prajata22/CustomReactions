@@ -18,18 +18,17 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import com.github.pgreze.reactions.*
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), ApplexGestureListener {
     private val strings = arrayOf("Like", "Love", "Haha", "Wow", "Sad", "Angry")
     private val colors = arrayOf(R.color.blue, R.color.red, R.color.yellow, R.color.yellow, R.color.yellow, R.color.orange)
+
+    private lateinit var imageView: ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         sampleCenterLeft()
-//        sampleTopLeft()
-//        sampleBottomLeft()
-//        setupTopRight()
-//        setupRight()
+        imageView = findViewById(R.id.image)
     }
 
     private fun sampleCenterLeft() {
@@ -42,11 +41,7 @@ class MainActivity : AppCompatActivity() {
                 dialogHeight: Int,
                 position: Int ->
 
-            Log.i("BAS", "1")
-
             if(reaction != null) {
-                Log.i("BAS", "2")
-
                 Handler(Looper.getMainLooper()).postDelayed({
                     ReactionView(this, reaction).also { reactionView ->
                         val lp = FrameLayout.LayoutParams(
@@ -106,7 +101,7 @@ class MainActivity : AppCompatActivity() {
 
         val popup = ReactionPopup(
             this,
-            findViewById(R.id.image),
+            this,
             ReactionsConfigBuilder(this)
                 .withReactions(intArrayOf(
                     R.raw.like,
@@ -121,6 +116,14 @@ class MainActivity : AppCompatActivity() {
         )
 
         findViewById<View>(R.id.facebook_btn).setOnTouchListener(popup)
+    }
+
+    override fun onSingleClick() {
+        imageView.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_fb_like))
+    }
+
+    override fun onLongClick() {
+
     }
 
 //    private fun sampleTopLeft() {

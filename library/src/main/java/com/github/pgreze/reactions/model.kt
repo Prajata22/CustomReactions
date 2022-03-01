@@ -14,7 +14,6 @@ import kotlin.math.roundToInt
 
 /**
  * Selected reaction callback.
- * @param position selected item position, or -1.
  * @return if reaction selector should close.
  */
 typealias ReactionSelectedListener = (
@@ -29,22 +28,15 @@ typealias ReactionSelectedListener = (
 
 /**
  * Reaction text provider.
- * @param position position of current selected item in [ReactionsConfig.reactions].
  * @return optional reaction text, null for no text.
  */
 typealias ReactionTextProvider = (position: Int) -> CharSequence?
 
 /**
  * Popup state change listener
- * @param isShowing flag denoting reaction pop is being displayed or not
  */
 typealias ReactionPopupStateChangeListener = (isShowing: Boolean) -> Unit
 
-//data class Reaction(
-//    val image: GifDrawable,
-//    val scaleType: ImageView.ScaleType = ImageView.ScaleType.FIT_CENTER
-//)
-//
 data class Reaction(
     val image: Drawable,
     val scaleType: ImageView.ScaleType = ImageView.ScaleType.FIT_CENTER,
@@ -60,6 +52,7 @@ data class ReactionsConfig(
     /** Horizontal gravity compare to parent view or screen */
     val popupGravity: PopupGravity,
     /** Margin between dialog and screen border used by [PopupGravity] screen related values. */
+
     val popupMargin: Int,
     val popupCornerRadius: Int,
     @ColorInt val popupColor: Int,
@@ -96,7 +89,7 @@ enum class PopupGravity {
     CENTER
 }
 
-class ReactionsConfigBuilder(val context: Context) {
+class ReactionsConfigBuilder(private val context: Context) {
 
     // DSL friendly property based values, with default or empty values replaced during build
 
@@ -120,20 +113,20 @@ class ReactionsConfigBuilder(val context: Context) {
     @Px
     var verticalMargin: Int = horizontalMargin
 
-    var popupGravity: PopupGravity = PopupGravity.DEFAULT
+    private var popupGravity: PopupGravity = PopupGravity.DEFAULT
 
-    var customTypeface: Typeface? = null
+    private var customTypeface: Typeface? = null
 
-    var popupMargin: Int = horizontalMargin
+    private var popupMargin: Int = horizontalMargin
 
-    var popupCornerRadius: Int = 120
+    private var popupCornerRadius: Int = 120
 
     @ColorInt
     var popupColor: Int = Color.WHITE
 
-    var popupAlpha: Int = 230
+    private var popupAlpha: Int = 230
 
-    var reactionTextProvider: ReactionTextProvider = NO_TEXT_PROVIDER
+    private var reactionTextProvider: ReactionTextProvider = NO_TEXT_PROVIDER
 
     var reactionTexts: Int
         get() = throw NotImplementedError()
@@ -141,20 +134,19 @@ class ReactionsConfigBuilder(val context: Context) {
             withReactionTexts(value)
         }
 
-    var textBackground: Drawable? = null
+    private var textBackground: Drawable? = null
 
     @ColorInt
     var textColor: Int = Color.WHITE
 
-    var textHorizontalPadding: Int = 0
+    private var textHorizontalPadding: Int = 0
 
-    var textVerticalPadding: Int = 0
+    private var textVerticalPadding: Int = 0
 
-    var textSize: Float = 0f
+    private var textSize: Float = 0f
 
     // Builder pattern for Java
-
-    fun withReactions(reactions: Collection<Reaction>) = this.also {
+    private fun withReactions(reactions: Collection<Reaction>) = this.also {
         this.reactions = reactions
     }
 
@@ -163,8 +155,6 @@ class ReactionsConfigBuilder(val context: Context) {
         res: IntArray,
         scaleType: ImageView.ScaleType = ImageView.ScaleType.FIT_CENTER
     ) = withReactions(res.map {
-//        Reaction(GifDrawable(context.resources, it), scaleType)
-//        Reaction(GifDrawable.createFromResource(context.resources, it)!!, scaleType)
         Reaction(ContextCompat.getDrawable(context, it)!!, scaleType, it)
     })
 
@@ -172,7 +162,7 @@ class ReactionsConfigBuilder(val context: Context) {
         this.reactionTextProvider = reactionTextProvider
     }
 
-    fun withReactionTexts(@ArrayRes res: Int) = this.also {
+    private fun withReactionTexts(@ArrayRes res: Int) = this.also {
         reactionTextProvider = context.resources.getStringArray(res)::get
     }
 
