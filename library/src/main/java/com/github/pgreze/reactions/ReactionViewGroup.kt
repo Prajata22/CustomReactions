@@ -56,9 +56,9 @@ class ReactionViewGroup(
         val nIcons = config.reactions.size
         val nDividers = max(1, nIcons - 1)
 
-        dialogWidth = horizontalPadding * 2 +
+        dialogWidth = (horizontalPadding * 3.2 +
                 mediumIconSize * nIcons +
-                iconDivider * nDividers
+                iconDivider * nDividers).roundToInt()
 
         smallIconSize = (dialogWidth
                 - horizontalPadding * 2
@@ -210,7 +210,7 @@ class ReactionViewGroup(
 
             val bottom = dialogY + dialogHeight - verticalPadding + translationY
             val top = bottom - view.layoutParams.height + translationY
-            val left = dialogX + horizontalPadding + prevX + translationX
+            val left = dialogX + horizontalPadding + prevX + translationX + 15
             val right = left + view.layoutParams.width + translationX
             view.layout(left, top, right, bottom)
 
@@ -364,7 +364,7 @@ class ReactionViewGroup(
                             } else {
                                 1 - progress
                             }
-                        }, (index * 14).toLong())
+                        }, (index * 16).toLong())
                     }
 
                     // Invalidate children positions
@@ -409,8 +409,6 @@ class ReactionViewGroup(
             .apply {
                 addUpdateListener {
                     val progress = it.animatedValue as Float
-
-
 
                     reactions.forEachIndexed { index, view ->
                         val size = paths[index].progressMove(progress)

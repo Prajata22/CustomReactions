@@ -114,7 +114,7 @@ class MainActivity : AppCompatActivity(), ApplexGestureListener {
                 .withReactions(intArrayOf(
                     R.raw.namaste,
                     R.raw.dhak,
-                    R.raw.lamp2,
+                    R.raw.lamp,
                     R.raw.flower,
                     R.raw.incense,
                     R.raw.bell))
@@ -134,7 +134,7 @@ class MainActivity : AppCompatActivity(), ApplexGestureListener {
             textView.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.text_secondary))
         } else {
             isLiked = true
-            imageView.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.like))
+            imageView.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.namaste))
             textView.text = strings[0]
             textView.setTextColor(ContextCompat.getColor(this@MainActivity, colors[0]))
         }
