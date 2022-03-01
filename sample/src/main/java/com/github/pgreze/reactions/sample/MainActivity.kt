@@ -12,7 +12,7 @@ import androidx.core.content.ContextCompat
 import com.github.pgreze.reactions.*
 
 class MainActivity : AppCompatActivity(), ApplexGestureListener {
-    private val strings = arrayOf("Like", "Love", "Haha", "Wow", "Sad", "Angry")
+    private val strings = arrayOf("Pranam", "Dhak", "Diya", "Flower", "Dhup", "Ghanta")
     private val colors = arrayOf(R.color.blue, R.color.red, R.color.yellow, R.color.yellow, R.color.yellow, R.color.orange)
 
     private lateinit var imageView: ImageView
@@ -112,12 +112,12 @@ class MainActivity : AppCompatActivity(), ApplexGestureListener {
             button,
             ReactionsConfigBuilder(this)
                 .withReactions(intArrayOf(
-                    R.raw.like,
-                    R.raw.love,
-                    R.raw.haha,
-                    R.raw.wow,
-                    R.raw.sad,
-                    R.raw.angry))
+                    R.raw.namaste,
+                    R.raw.dhak,
+                    R.raw.lamp2,
+                    R.raw.flower,
+                    R.raw.incense,
+                    R.raw.bell))
                 .withReactionTexts { position: Int? -> strings[position!!] }
                 .build(),
             reactionSelectedListener
