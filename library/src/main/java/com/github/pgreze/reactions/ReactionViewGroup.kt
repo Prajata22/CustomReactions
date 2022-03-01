@@ -6,6 +6,8 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Point
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
@@ -114,7 +116,7 @@ class ReactionViewGroup(
                         removeView(background)
                         background = RoundedView(context, config)
                             .also {
-                                it.layoutParams = LayoutParams(dialogWidth, dialogHeight)
+                                it.layoutParams = LayoutParams(dialogWidth, mediumIconSize)
                                 addView(it, 0)
                             }
                     }
@@ -125,7 +127,7 @@ class ReactionViewGroup(
                     removeView(background)
                     background = RoundedView(context, config)
                         .also {
-                            it.layoutParams = LayoutParams(dialogWidth, dialogHeight - 60)
+                            it.layoutParams = LayoutParams(dialogWidth, smallIconSize)
                             addView(it, 0)
                         }
                     animSize(value)
@@ -408,10 +410,20 @@ class ReactionViewGroup(
                 addUpdateListener {
                     val progress = it.animatedValue as Float
 
+
+
                     reactions.forEachIndexed { index, view ->
                         val size = paths[index].progressMove(progress)
                         view.layoutParams.size = size
                     }
+
+                    requestLayout()
+
+                    val index = state?.view ?: return@addUpdateListener
+                    reactionText.text =
+                        config.reactionTextProvider(reactions.indexOf(index))
+                            ?: return@addUpdateListener
+                    reactionText.visibility = View.VISIBLE
 
                     // Invalidate children positions
                     requestLayout()
@@ -420,17 +432,12 @@ class ReactionViewGroup(
                     override fun onAnimationRepeat(animation: Animator?) {}
 
                     override fun onAnimationEnd(animation: Animator?) {
-                        val index = state?.view ?: return
-                        reactionText.text =
-                            config.reactionTextProvider(reactions.indexOf(index))
-                                ?: return
-                        reactionText.visibility = View.VISIBLE
-                        requestLayout()
                     }
 
                     override fun onAnimationCancel(animation: Animator?) {}
 
-                    override fun onAnimationStart(animation: Animator?) {}
+                    override fun onAnimationStart(animation: Animator?) {
+                    }
                 })
             }
     }

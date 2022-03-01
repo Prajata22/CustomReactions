@@ -143,7 +143,7 @@ class ReactionsConfigBuilder(private val context: Context) {
 
     private var textVerticalPadding: Int = 0
 
-    private var textSize: Float = 0f
+    private var textSize: Float = 15f
 
     // Builder pattern for Java
     private fun withReactions(reactions: Collection<Reaction>) = this.also {
