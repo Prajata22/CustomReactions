@@ -13,7 +13,14 @@ import com.github.pgreze.reactions.*
 
 class MainActivity : AppCompatActivity(), ApplexGestureListener {
     private val strings = arrayOf("Pranam", "Dhak", "Diya", "Flower", "Dhup", "Ghanta")
-    private val colors = arrayOf(R.color.blue, R.color.red, R.color.yellow, R.color.yellow, R.color.yellow, R.color.orange)
+    private val colors = arrayOf(
+        R.color.blue, R.color.red, R.color.yellow,
+        R.color.yellow, R.color.yellow, R.color.orange
+    )
+    private val images = arrayOf(
+        R.drawable.ic_pranam, R.drawable.ic_dhak, R.drawable.ic_lamp,
+        R.drawable.ic_flower, R.drawable.ic_incense, R.drawable.ic_bell
+    )
 
     private lateinit var imageView: ImageView
     private lateinit var textView: TextView
@@ -31,7 +38,7 @@ class MainActivity : AppCompatActivity(), ApplexGestureListener {
         button = findViewById(R.id.facebook_btn)
         frameLayout = findViewById(R.id.rootView)
 
-        imageView.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_like))
+        imageView.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_pranam_outline))
         textView.text = strings[0]
         textView.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.text_secondary))
 
@@ -88,7 +95,7 @@ class MainActivity : AppCompatActivity(), ApplexGestureListener {
 
                             override fun onAnimationEnd(animation: Animation) {
                                 frameLayout.removeView(reactionView)
-                                imageView.setImageDrawable(reaction.image)
+                                imageView.setImageDrawable(ContextCompat.getDrawable(this@MainActivity, images[position]))
                                 textView.text = strings[position]
                                 textView.setTextColor(ContextCompat.getColor(this@MainActivity, colors[position]))
                             }
@@ -112,7 +119,7 @@ class MainActivity : AppCompatActivity(), ApplexGestureListener {
             button,
             ReactionsConfigBuilder(this)
                 .withReactions(intArrayOf(
-                    R.raw.namaste,
+                    R.raw.pranam,
                     R.raw.dhak,
                     R.raw.lamp,
                     R.raw.flower,
@@ -129,12 +136,12 @@ class MainActivity : AppCompatActivity(), ApplexGestureListener {
     override fun onSingleClick() {
         if(isLiked) {
             isLiked = false
-            imageView.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_like))
+            imageView.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_pranam_outline))
             textView.text = strings[0]
             textView.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.text_secondary))
         } else {
             isLiked = true
-            imageView.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.namaste))
+            imageView.setImageDrawable(ContextCompat.getDrawable(this@MainActivity, images[0]))
             textView.text = strings[0]
             textView.setTextColor(ContextCompat.getColor(this@MainActivity, colors[0]))
         }
