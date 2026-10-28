@@ -1,3 +1,5 @@
+> **Note:** This repository is based on [pgreze/android-reactions](https://github.com/pgreze/android-reactions) by its original authors and is kept here for reference. Credit and licence belong to the original project; use the original for the current version.
+
 # Android reactions [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) [![Build Status](https://github.com/pgreze/android-reactions/workflows/Build/badge.svg)](https://github.com/pgreze/android-reactions/actions?query=workflow%3ABuild)
 
 An open source and fully customizable implementation of the
